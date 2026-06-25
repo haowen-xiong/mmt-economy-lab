@@ -1,37 +1,39 @@
 # MMT Economy Lab
 
-一个面向 MMT 学习的现代经济模拟沙盒。项目把宏观部门余额、政府财政、商业银行信用、真实资源约束、外部部门、资产价格和分配压力放在同一个交互界面里观察。
+MMT Economy Lab is an interactive learning sandbox for exploring modern monetary theory and the structure of a contemporary monetary economy. It places sectoral balances, fiscal policy, bank credit, real resource constraints, the external sector, asset prices, inequality, and automation pressure in one visual interface.
 
-## 模型边界
+The app defaults to English and includes a sidebar language switch for Chinese.
 
-这是一个教学和思考工具，不是经过现实数据校准的预测模型，也不构成投资建议、财政建议或公共政策建议。界面中的金额、比例和参数用于展示机制关系：部门余额如何闭合、财政如何影响私人部门净金融资产、信用如何创造存款、真实资源约束如何转化为通胀压力。
+## Model Boundary
 
-模型采用 MMT 视角组织变量，但它有意保持简化：没有完整的价格形成、产业结构、央行操作细节、政治约束或国际资本流动。适合用来提出问题、比较机制、辅助学习，不适合直接外推到任何真实国家或市场。
+This is a teaching and reasoning tool, not a calibrated forecasting model. It is not investment advice, fiscal advice, or public policy advice. The amounts, ratios, and parameters are designed to make mechanisms visible: how sectoral balances close, how fiscal deficits affect private net financial assets, how bank lending creates deposits, and how real resource constraints can turn into inflation pressure.
 
-## 核心模块
+The model is organized through an MMT lens, but it is intentionally simplified. It does not include full price formation, industrial structure, central-bank operating details, political constraints, or international capital flows. Use it to ask questions, compare mechanisms, and support learning. Do not directly extrapolate its outputs to any real country or market.
 
-- 政府：支出、税收、赤字、国债、就业保障。
-- 私人部门：家庭/企业收入、消费、投资、净金融资产。
-- 银行系统：贷款、存款、准备金、信用扩张/收缩。
-- 真实资源：产能、真实产出、失业、通胀压力。
-- 外部部门：进口、出口、经常账户、汇率指数。
-- 现代社会：资产价格、工资份额、不平等指数、自动化集中度。
-- 界面语言：侧栏可在中文和 English 之间切换。
+## Core Modules
 
-## 运行
+- Government: spending, taxes, deficits, bonds, and job guarantee support.
+- Private sector: household and firm income, consumption, investment, and net financial assets.
+- Banking system: loans, deposits, reserves, credit expansion, and deleveraging.
+- Real resources: capacity, real output, unemployment, and inflation pressure.
+- External sector: imports, exports, current account, and exchange-rate index.
+- Modern society layer: asset prices, wage share, inequality, automation concentration, and platform pressure.
+- Policy comparison: compare scenarios and the current slider policy across growth, stress, and scoring metrics.
+
+## Run Locally
 
 ```bash
 npm install
 npm run dev -- --host 127.0.0.1
 ```
 
-打开：
+Open:
 
 ```text
 http://127.0.0.1:5173/
 ```
 
-## 验证
+## Validate
 
 ```bash
 npm run build
@@ -39,10 +41,13 @@ npm run lint
 npm run test
 ```
 
-## 模型位置
+## Project Structure
 
-经济机制在 `src/simulation.ts`，界面在 `src/App.tsx` 和 `src/App.css`。
+- `src/simulation.ts`: core economy model and scenarios.
+- `src/derivedMetrics.ts`: comparison scoring and social actor derived views.
+- `src/App.tsx`: application state, copy, charts, and panels.
+- `src/App.css`: responsive layout and visual system.
 
-## 许可证
+## License
 
-MIT License。详见 `LICENSE`。
+MIT License. See `LICENSE`.

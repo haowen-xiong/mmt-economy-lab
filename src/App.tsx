@@ -623,7 +623,7 @@ function App() {
   const [policy, setPolicy] = useState<Policy>(defaultPolicy)
   const [activeScenario, setActiveScenario] = useState(scenarios[0].id)
   const [activeTab, setActiveTab] = useState<TabId>('overview')
-  const [language, setLanguage] = useState<Language>('zh')
+  const [language, setLanguage] = useState<Language>('en')
   const [cursor, setCursor] = useState(24)
   const [horizon, setHorizon] = useState(INITIAL_HORIZON)
   const [running, setRunning] = useState(false)
