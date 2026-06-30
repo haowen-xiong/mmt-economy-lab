@@ -40,6 +40,7 @@ npm run check
 Then inspect:
 
 - README screenshot renders on GitHub.
+- Social preview image renders at `docs/social-preview.jpg` and Open Graph/Twitter meta tags point to it.
 - CI badge is green.
 - Share button updates the URL and shows a copied or ready state.
 - Default app language is English.
