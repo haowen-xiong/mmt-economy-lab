@@ -652,6 +652,110 @@
   gap: 5px;
 }
 
+.transmission-map {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.transmission-step {
+  min-width: 0;
+  min-height: 150px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 12px;
+}
+
+.transmission-step header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.transmission-step header span {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #e2e8f0;
+}
+
+.transmission-step small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.transmission-step strong {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.transmission-step em {
+  min-width: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.transmission-step p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.transmission-step.blue {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.transmission-step.blue header span {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.transmission-step.green {
+  border-color: #99f6e4;
+  background: #f0fdfa;
+}
+
+.transmission-step.green header span {
+  color: #0f766e;
+  background: #ccfbf1;
+}
+
+.transmission-step.amber {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.transmission-step.amber header span {
+  color: #b45309;
+  background: #fef3c7;
+}
+
+.transmission-step.red {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.transmission-step.red header span {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
 .reading-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 0.72fr);
@@ -1050,6 +1154,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .transmission-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .comparison-picker,
   .comparison-score-panel,
   .comparison-table-panel {
@@ -1087,6 +1195,10 @@
   }
 
   .social-actor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .transmission-map {
     grid-template-columns: 1fr;
   }
 

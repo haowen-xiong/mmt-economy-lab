@@ -81,6 +81,10 @@ type ReadingLine = {
   value: string
   tone: StatusTone
 }
+type TransmissionStep = ReadingLine & {
+  detail: string
+  icon: Icon
+}
 type TooltipContextValue = {
   show: (text: string, x: number, y: number) => void
   hide: () => void
@@ -263,6 +267,7 @@ const copy = {
       mmtIdentity: ['MMT 恒等式', '三部门余额'],
       guidedExperiments: ['入门实验', '从问题开始'],
       currentReading: ['当前读数', '这组政策意味着什么'],
+      transmission: ['政策传导链', '从货币流到真实约束'],
       sectorSeries: ['部门余额时间序列', '政府 + 私人 + 外国 = 0'],
       currentBalances: ['当期余额', '盈余为正'],
       balanceSheet: ['资产负债表快照', '存量'],
@@ -283,6 +288,7 @@ const copy = {
       mmtIdentity: '政府余额、私人部门余额、外国部门余额必须相加为零，这是部门余额分析的基本闭合条件。',
       guidedExperiments: '直接打开几个高信号实验，快速观察财政、信用、资源和分配约束如何改变结果。',
       currentReading: '把当前周期的财政、资源、外部和分配信号翻译成文字，帮助你决定下一步该看哪张图。',
+      transmission: '把当前政策拆成财政、银行信用、真实资源、外部部门和分配结构五个传导环节。',
       sectorSeries: '观察不同政策下，政府赤字如何映射到私人部门盈余和外国部门盈余。',
       currentBalances: '正值表示该部门当期获得净金融流入，负值表示净流出。',
       balanceSheet: '用简化资产负债表看存量：国债、存款、贷款、准备金和净金融资产如何对应。',
@@ -375,6 +381,24 @@ const copy = {
         resourceLimit: ['什么时候转向通胀？', '查看真实产出和产能，区分财政能力与真实资源约束。', '真实资源'],
         automationDistribution: ['高产出是否会共享？', '进入社会结构层，观察自动化、资产价格和工资份额的分化。', '现代社会'],
       },
+    },
+    transmission: {
+      fiscal: '财政立场',
+      fiscalExpansion: '净注入非政府部门',
+      fiscalDrain: '回收私人购买力',
+      credit: '银行信用',
+      creditExpansion: '贷款创造存款',
+      creditContraction: '偿还销毁存款',
+      resources: '真实资源',
+      resourceTight: '供给或价格约束变紧',
+      resourceRoom: '仍有可动员资源',
+      resourceSlack: '需求不足仍占主导',
+      external: '外部部门',
+      externalLeak: '需求泄漏到进口',
+      externalSupport: '外部压力较低',
+      distribution: '分配结构',
+      distributionPressure: '增长分配不均',
+      distributionStable: '分配压力温和',
     },
     reading: {
       fiscal: '财政立场',
@@ -557,6 +581,7 @@ const copy = {
       mmtIdentity: ['MMT Identity', 'Three-sector balances'],
       guidedExperiments: ['Guided Experiments', 'Start from a question'],
       currentReading: ['Current Reading', 'What this policy means now'],
+      transmission: ['Policy Transmission', 'Money flows to real constraints'],
       sectorSeries: ['Sector Balance Series', 'Government + private + foreign = 0'],
       currentBalances: ['Current Balances', 'Surplus is positive'],
       balanceSheet: ['Balance Sheet Snapshot', 'Stocks'],
@@ -577,6 +602,7 @@ const copy = {
       mmtIdentity: 'Government, private-sector and foreign-sector balances must sum to zero. This is the accounting closure behind sectoral balances.',
       guidedExperiments: 'Open high-signal experiments that quickly show how fiscal, credit, resource and distribution constraints change the result.',
       currentReading: 'Translates current-period fiscal, resource, external and distribution signals into plain-language next steps.',
+      transmission: 'Breaks the current policy into fiscal, bank-credit, real-resource, external-sector and distribution transmission links.',
       sectorSeries: 'Shows how government deficits map into private-sector and foreign-sector surpluses over time.',
       currentBalances: 'Positive values mean a sector receives a net financial inflow this period; negative values mean an outflow.',
       balanceSheet: 'A compact stock view of bonds, deposits, loans, reserves and net financial assets.',
@@ -669,6 +695,24 @@ const copy = {
         resourceLimit: ['When does spending turn into inflation?', 'Compare real output and capacity to separate fiscal capacity from real-resource limits.', 'Real resources'],
         automationDistribution: ['Does high output get shared?', 'Open the society layer and track automation, asset prices and wage-share pressure.', 'Modern society'],
       },
+    },
+    transmission: {
+      fiscal: 'Fiscal stance',
+      fiscalExpansion: 'Net injection to non-government',
+      fiscalDrain: 'Withdrawing private purchasing power',
+      credit: 'Bank credit',
+      creditExpansion: 'Loans are creating deposits',
+      creditContraction: 'Repayment is destroying deposits',
+      resources: 'Real resources',
+      resourceTight: 'Supply or price constraints are tightening',
+      resourceRoom: 'Mobilizable resources remain',
+      resourceSlack: 'Weak demand still dominates',
+      external: 'External sector',
+      externalLeak: 'Demand is leaking into imports',
+      externalSupport: 'External pressure is low',
+      distribution: 'Distribution structure',
+      distributionPressure: 'Growth is unevenly distributed',
+      distributionStable: 'Distribution pressure is moderate',
     },
     reading: {
       fiscal: 'Fiscal stance',
@@ -1160,6 +1204,7 @@ function App() {
           <Overview
             copy={ui}
             current={current}
+            policy={policy}
             series={visibleSeries}
             scenarioTitle={activeScenarioCopy[0]}
             shareUrl={currentShareUrl}
@@ -1192,6 +1237,7 @@ function App() {
 function Overview({
   copy,
   current,
+  policy,
   series,
   scenarioTitle,
   shareUrl,
@@ -1199,6 +1245,7 @@ function Overview({
 }: {
   copy: Copy
   current: EconomyPoint
+  policy: Policy
   series: EconomyPoint[]
   scenarioTitle: string
   shareUrl: string
@@ -1242,6 +1289,16 @@ function Overview({
 
       <section className="tool-panel full">
         <PanelTitle
+          icon={ArrowRight}
+          title={copy.panels.transmission[0]}
+          meta={copy.panels.transmission[1]}
+          help={copy.panelHelp.transmission}
+        />
+        <TransmissionMap copy={copy} current={current} policy={policy} />
+      </section>
+
+      <section className="tool-panel full">
+        <PanelTitle
           icon={HelpCircle}
           title={copy.panels.currentReading[0]}
           meta={copy.panels.currentReading[1]}
@@ -1261,6 +1318,109 @@ function Overview({
       </section>
     </div>
   )
+}
+
+function TransmissionMap({
+  copy,
+  current,
+  policy,
+}: {
+  copy: Copy
+  current: EconomyPoint
+  policy: Policy
+}) {
+  const steps = buildTransmissionSteps(copy, current, policy)
+
+  return (
+    <div className="transmission-map">
+      {steps.map((step, index) => {
+        const IconComponent = step.icon
+        return (
+          <article className={`transmission-step ${step.tone}`} key={step.label}>
+            <header>
+              <span>
+                <IconComponent size={18} />
+              </span>
+              <small>{String(index + 1).padStart(2, '0')}</small>
+            </header>
+            <strong>{step.label}</strong>
+            <em>{step.value}</em>
+            <p>{step.detail}</p>
+          </article>
+        )
+      })}
+    </div>
+  )
+}
+
+function buildTransmissionSteps(copy: Copy, current: EconomyPoint, policy: Policy): TransmissionStep[] {
+  const fiscalTone: StatusTone = current.fiscalDeficit >= 0 ? 'blue' : 'red'
+  const creditTone: StatusTone =
+    current.creditCreation > 20 ? 'blue' : current.creditCreation < -10 ? 'red' : 'green'
+  const resourceTone: StatusTone =
+    current.capacityUse > 96 || current.inflation > 6
+      ? 'red'
+      : current.unemployment > 8
+        ? 'amber'
+        : 'green'
+  const externalTone: StatusTone = current.currentAccount < 0 ? 'amber' : 'green'
+  const distributionTone: StatusTone =
+    current.inequality >= 0.48 || current.wageShare < 0.55 ? 'red' : 'green'
+
+  return [
+    {
+      label: copy.transmission.fiscal,
+      value:
+        current.fiscalDeficit >= 0
+          ? copy.transmission.fiscalExpansion
+          : copy.transmission.fiscalDrain,
+      detail: `${copy.policies.governmentSpending} ${formatMoney(policy.governmentSpending)} / ${copy.policies.taxRate} ${policy.taxRate.toFixed(0)}%`,
+      tone: fiscalTone,
+      icon: Banknote,
+    },
+    {
+      label: copy.transmission.credit,
+      value:
+        current.creditCreation >= 0
+          ? copy.transmission.creditExpansion
+          : copy.transmission.creditContraction,
+      detail: `${copy.chart.netCreditCreation} ${formatMoney(current.creditCreation)} / ${copy.chart.bankLoans} ${formatMoney(current.bankLoans)}`,
+      tone: creditTone,
+      icon: Landmark,
+    },
+    {
+      label: copy.transmission.resources,
+      value:
+        current.capacityUse > 96 || current.inflation > 6
+          ? copy.transmission.resourceTight
+          : current.unemployment > 8
+            ? copy.transmission.resourceSlack
+            : copy.transmission.resourceRoom,
+      detail: `${copy.metrics.capacityUse} ${formatPercent(current.capacityUse)} / ${copy.metrics.inflation} ${formatPercent(current.inflation)}`,
+      tone: resourceTone,
+      icon: Factory,
+    },
+    {
+      label: copy.transmission.external,
+      value:
+        current.currentAccount < 0
+          ? copy.transmission.externalLeak
+          : copy.transmission.externalSupport,
+      detail: `${copy.chart.currentAccount} ${formatMoney(current.currentAccount)} / ${copy.policies.importShare} ${policy.importShare.toFixed(0)}%`,
+      tone: externalTone,
+      icon: Globe2,
+    },
+    {
+      label: copy.transmission.distribution,
+      value:
+        current.inequality >= 0.48 || current.wageShare < 0.55
+          ? copy.transmission.distributionPressure
+          : copy.transmission.distributionStable,
+      detail: `${copy.metrics.wageShare} ${formatPercent(current.wageShare * 100)} / ${copy.chart.inequality} ${current.inequality.toFixed(2)}`,
+      tone: distributionTone,
+      icon: Users,
+    },
+  ]
 }
 
 function GuidedExperimentList({

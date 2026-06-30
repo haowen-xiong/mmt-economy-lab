@@ -27,6 +27,7 @@ The app defaults to English and includes a sidebar language switch for Chinese.
 - **Sectoral balances:** government, private, and foreign balances always close to the accounting identity.
 - **Guided experiments:** start from concrete questions instead of reading the whole model first.
 - **Current reading:** translate the current period into fiscal, resource, external, and distribution signals.
+- **Policy transmission map:** trace how fiscal stance, bank credit, real resources, external leakage, and distribution pressure connect in the current run.
 - **Copyable briefs:** turn a scenario into a compact Markdown summary with the exact share URL.
 - **Policy knobs:** tune spending, taxes, job guarantee support, rates, credit impulse, productivity, imports, energy costs, automation, exports, and transfers.
 - **Policy comparison:** compare scenarios against the current slider policy with growth, stress, and scorecard views.
