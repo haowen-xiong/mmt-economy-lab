@@ -6,7 +6,7 @@
 
 An interactive MMT and modern monetary economy sandbox for learning how fiscal policy, bank credit, real resources, external constraints, asset prices, inequality, and automation interact.
 
-[Model notes](docs/model.md) · [Scenario guide](docs/scenarios.md) · [Report an issue](https://github.com/haowen-xiong/mmt-economy-lab/issues) · [Contribute](CONTRIBUTING.md)
+[Model notes](docs/model.md) · [Scenario guide](docs/scenarios.md) · [Launch checklist](docs/launch.md) · [Report an issue](https://github.com/haowen-xiong/mmt-economy-lab/issues) · [Contribute](CONTRIBUTING.md)
 
 ![MMT Economy Lab screenshot](docs/screenshot.jpg)
 
@@ -38,6 +38,16 @@ The app defaults to English and includes a sidebar language switch for Chinese.
 - Read the [Scenario Guide](docs/scenarios.md) if you want a guided path through the built-in experiments.
 - Use the **Policy Compare** tab when you want to compare the current slider policy against the preset scenarios.
 - Use the **Share** button after changing policy knobs when you want to send someone the exact experiment state.
+
+## Try These Experiments
+
+These links work once GitHub Pages is enabled for the repository:
+
+- [Fiscal support while resources remain available](https://haowen-xiong.github.io/mmt-economy-lab/?scenario=sovereign-stabilizer&tab=overview&lang=en&period=24)
+- [Austerity with weak private credit](https://haowen-xiong.github.io/mmt-economy-lab/?scenario=austerity-gap&tab=balances&lang=en&period=36)
+- [Deficit expansion at the real-resource limit](https://haowen-xiong.github.io/mmt-economy-lab/?scenario=resource-limit&tab=resources&lang=en&period=32)
+- [Automation, asset prices, and wage share](https://haowen-xiong.github.io/mmt-economy-lab/?scenario=automation-platform&tab=society&lang=en&period=48)
+- [Policy comparison dashboard](https://haowen-xiong.github.io/mmt-economy-lab/?scenario=sovereign-stabilizer&tab=compare&lang=en&period=24)
 
 ## Model Boundary
 
