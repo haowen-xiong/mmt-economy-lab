@@ -4,6 +4,8 @@ MMT Economy Lab includes six built-in scenarios. Each one is designed to isolate
 
 Use this guide as a learning path. Start with the baseline, then move one scenario at a time and ask which constraint becomes binding.
 
+After changing a scenario or moving policy knobs, use **Share** to copy a URL that preserves the current tab, period, language, scenario, and custom policy values. This makes it easier to compare interpretations with someone else using the same experiment state.
+
 ## 1. Sovereign Stabilizer
 
 **Theme:** fiscal support plus job guarantee buffer

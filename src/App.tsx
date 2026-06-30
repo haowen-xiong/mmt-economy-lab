@@ -36,6 +36,7 @@ import {
   Play,
   RefreshCcw,
   Scale,
+  Share2,
   Settings2,
   ShieldAlert,
   StepForward,
@@ -44,7 +45,6 @@ import {
   WalletCards,
 } from 'lucide-react'
 import {
-  defaultPolicy,
   formatMoney,
   formatPercent,
   runSimulation,
@@ -61,12 +61,12 @@ import {
   type SocialActorId,
   type SocialActorView,
 } from './derivedMetrics'
+import { buildShareUrl, readInitialAppState, type Language, type TabId } from './shareState'
 import './App.css'
 
 type Icon = ComponentType<{ size?: number; strokeWidth?: number; className?: string }>
-type TabId = 'overview' | 'balances' | 'credit' | 'resources' | 'society' | 'compare'
-type Language = 'zh' | 'en'
 type TooltipState = { text: string; x: number; y: number } | null
+type ShareStatus = 'idle' | 'copied' | 'ready'
 type TooltipContextValue = {
   show: (text: string, x: number, y: number) => void
   hide: () => void
@@ -108,7 +108,47 @@ const HORIZON_EXTENSION_THRESHOLD = 12
 const TOOLTIP_WIDTH = 320
 const TOOLTIP_MARGIN = 12
 const TOOLTIP_OFFSET = 14
+const CLIPBOARD_TIMEOUT_MS = 600
 const comparisonColors = ['#2563eb', '#0f766e', '#b45309', '#dc2626', '#7c3aed', '#475569', '#0891b2']
+
+function copyTextWithTextArea(text: string) {
+  const textArea = document.createElement('textarea')
+  textArea.value = text
+  textArea.setAttribute('readonly', '')
+  textArea.style.position = 'fixed'
+  textArea.style.left = '-9999px'
+  document.body.appendChild(textArea)
+  textArea.select()
+  try {
+    return document.execCommand('copy')
+  } catch {
+    return false
+  } finally {
+    document.body.removeChild(textArea)
+  }
+}
+
+async function copyText(text: string) {
+  const textAreaCopied = copyTextWithTextArea(text)
+  if (textAreaCopied) return true
+
+  if (!navigator.clipboard?.writeText || !window.isSecureContext) return false
+
+  let timeoutId: ReturnType<typeof window.setTimeout> | undefined
+  try {
+    return await Promise.race([
+      navigator.clipboard.writeText(text).then(
+        () => true,
+        () => false,
+      ),
+      new Promise<boolean>((resolve) => {
+        timeoutId = window.setTimeout(() => resolve(false), CLIPBOARD_TIMEOUT_MS)
+      }),
+    ])
+  } finally {
+    if (timeoutId !== undefined) window.clearTimeout(timeoutId)
+  }
+}
 
 const copy = {
   zh: {
@@ -119,6 +159,9 @@ const copy = {
     pause: '暂停',
     step: '推进',
     reset: '重置',
+    shareExperiment: '分享',
+    copied: '已复制',
+    linkReady: '链接就绪',
     scenario: '场景',
     policyKnobs: '政策旋钮',
     customExperiment: '自定义实验',
@@ -371,6 +414,9 @@ const copy = {
     pause: 'Pause',
     step: 'Step',
     reset: 'Reset',
+    shareExperiment: 'Share',
+    copied: 'Copied',
+    linkReady: 'Link ready',
     scenario: 'Scenarios',
     policyKnobs: 'Policy Knobs',
     customExperiment: 'Custom experiment',
@@ -620,13 +666,15 @@ const copy = {
 type Copy = (typeof copy)[Language]
 
 function App() {
-  const [policy, setPolicy] = useState<Policy>(defaultPolicy)
-  const [activeScenario, setActiveScenario] = useState(scenarios[0].id)
-  const [activeTab, setActiveTab] = useState<TabId>('overview')
-  const [language, setLanguage] = useState<Language>('en')
-  const [cursor, setCursor] = useState(24)
+  const [initialState] = useState(readInitialAppState)
+  const [policy, setPolicy] = useState<Policy>(initialState.policy)
+  const [activeScenario, setActiveScenario] = useState(initialState.activeScenario)
+  const [activeTab, setActiveTab] = useState<TabId>(initialState.activeTab)
+  const [language, setLanguage] = useState<Language>(initialState.language)
+  const [cursor, setCursor] = useState(initialState.cursor)
   const [horizon, setHorizon] = useState(INITIAL_HORIZON)
   const [running, setRunning] = useState(false)
+  const [shareStatus, setShareStatus] = useState<ShareStatus>('idle')
   const [tooltip, setTooltip] = useState<TooltipState>(null)
   const [comparisonScenarioIds, setComparisonScenarioIds] = useState<string[]>([
     'sovereign-stabilizer',
@@ -712,6 +760,24 @@ function App() {
     })
   }
 
+  useEffect(() => {
+    setShareStatus('idle')
+  }, [policy, activeScenario, activeTab, language, boundedCursor])
+
+  const shareExperiment = async () => {
+    const shareUrl = buildShareUrl(window.location.href, {
+      policy,
+      activeScenario,
+      activeTab,
+      language,
+      cursor: boundedCursor,
+    })
+    window.history.replaceState(null, '', shareUrl)
+    setShareStatus('ready')
+    const copied = await copyText(shareUrl)
+    setShareStatus(copied ? 'copied' : 'ready')
+  }
+
   const toggleComparisonScenario = (scenarioId: string) => {
     setComparisonScenarioIds((selected) =>
       selected.includes(scenarioId)
@@ -747,6 +813,17 @@ function App() {
             onClick={stepForward}
           />
           <IconButton icon={RefreshCcw} label={ui.reset} onClick={reset} />
+          <IconButton
+            icon={Share2}
+            label={
+              shareStatus === 'copied'
+                ? ui.copied
+                : shareStatus === 'ready'
+                  ? ui.linkReady
+                  : ui.shareExperiment
+            }
+            onClick={shareExperiment}
+          />
         </div>
 
         <section className="language-section">
