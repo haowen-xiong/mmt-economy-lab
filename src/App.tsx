@@ -182,6 +182,9 @@ const copy = {
     shareExperiment: '分享',
     copied: '已复制',
     linkReady: '链接就绪',
+    copyBrief: '复制简报',
+    briefCopied: '简报已复制',
+    briefReady: '简报就绪',
     scenario: '场景',
     policyKnobs: '政策旋钮',
     customExperiment: '自定义实验',
@@ -473,6 +476,9 @@ const copy = {
     shareExperiment: 'Share',
     copied: 'Copied',
     linkReady: 'Link ready',
+    copyBrief: 'Copy brief',
+    briefCopied: 'Brief copied',
+    briefReady: 'Brief ready',
     scenario: 'Scenarios',
     policyKnobs: 'Policy Knobs',
     customExperiment: 'Custom experiment',
@@ -782,6 +788,13 @@ function App() {
   const visibleSeries = series.slice(0, boundedCursor + 1)
   const activeScenarioCopy =
     ui.scenarios[activeScenario as keyof typeof ui.scenarios] ?? [ui.customExperiment, '']
+  const currentShareUrl = buildShareUrl(window.location.href, {
+    policy,
+    activeScenario,
+    activeTab,
+    language,
+    cursor: boundedCursor,
+  })
 
   useEffect(() => {
     if (!running) return
@@ -868,16 +881,9 @@ function App() {
   }, [policy, activeScenario, activeTab, language, boundedCursor])
 
   const shareExperiment = async () => {
-    const shareUrl = buildShareUrl(window.location.href, {
-      policy,
-      activeScenario,
-      activeTab,
-      language,
-      cursor: boundedCursor,
-    })
-    window.history.replaceState(null, '', shareUrl)
+    window.history.replaceState(null, '', currentShareUrl)
     setShareStatus('ready')
-    const copied = await copyText(shareUrl)
+    const copied = await copyText(currentShareUrl)
     setShareStatus(copied ? 'copied' : 'ready')
   }
 
@@ -1155,6 +1161,8 @@ function App() {
             copy={ui}
             current={current}
             series={visibleSeries}
+            scenarioTitle={activeScenarioCopy[0]}
+            shareUrl={currentShareUrl}
             onOpenExperiment={openGuidedExperiment}
           />
         )}
@@ -1185,11 +1193,15 @@ function Overview({
   copy,
   current,
   series,
+  scenarioTitle,
+  shareUrl,
   onOpenExperiment,
 }: {
   copy: Copy
   current: EconomyPoint
   series: EconomyPoint[]
+  scenarioTitle: string
+  shareUrl: string
   onOpenExperiment: (experiment: GuidedExperiment) => void
 }) {
   return (
@@ -1235,7 +1247,12 @@ function Overview({
           meta={copy.panels.currentReading[1]}
           help={copy.panelHelp.currentReading}
         />
-        <CurrentReading copy={copy} current={current} />
+        <CurrentReading
+          copy={copy}
+          current={current}
+          scenarioTitle={scenarioTitle}
+          shareUrl={shareUrl}
+        />
       </section>
 
       <section className="tool-panel full">
@@ -1281,9 +1298,31 @@ function GuidedExperimentList({
   )
 }
 
-function CurrentReading({ copy, current }: { copy: Copy; current: EconomyPoint }) {
+function CurrentReading({
+  copy,
+  current,
+  scenarioTitle,
+  shareUrl,
+}: {
+  copy: Copy
+  current: EconomyPoint
+  scenarioTitle: string
+  shareUrl: string
+}) {
   const lines = buildReadingLines(copy, current)
   const nextItems = buildNextObservations(copy, current)
+  const [briefStatus, setBriefStatus] = useState<ShareStatus>('idle')
+
+  useEffect(() => {
+    setBriefStatus('idle')
+  }, [copy, current, scenarioTitle, shareUrl])
+
+  const copyBrief = async () => {
+    setBriefStatus('ready')
+    const brief = buildExperimentBrief(copy, current, scenarioTitle, shareUrl)
+    const copied = await copyText(brief)
+    setBriefStatus(copied ? 'copied' : 'ready')
+  }
 
   return (
     <div className="reading-grid">
@@ -1293,7 +1332,16 @@ function CurrentReading({ copy, current }: { copy: Copy; current: EconomyPoint }
         ))}
       </div>
       <div className="reading-next">
-        <strong>{copy.reading.nextTitle}</strong>
+        <div className="reading-next-header">
+          <strong>{copy.reading.nextTitle}</strong>
+          <button type="button" className="copy-brief-button" onClick={copyBrief}>
+            {briefStatus === 'copied'
+              ? copy.briefCopied
+              : briefStatus === 'ready'
+                ? copy.briefReady
+                : copy.copyBrief}
+          </button>
+        </div>
         <ul>
           {nextItems.map((item) => (
             <li key={item}>{item}</li>
@@ -1302,6 +1350,28 @@ function CurrentReading({ copy, current }: { copy: Copy; current: EconomyPoint }
       </div>
     </div>
   )
+}
+
+function buildExperimentBrief(copy: Copy, current: EconomyPoint, scenarioTitle: string, shareUrl: string) {
+  const lines = buildReadingLines(copy, current)
+  const nextItems = buildNextObservations(copy, current)
+
+  return [
+    `# ${scenarioTitle} - ${copy.period} ${current.period}`,
+    '',
+    `- ${copy.metrics.nominalGdp}: ${formatMoney(current.nominalGdp)} (${copy.metrics.capacityUse} ${formatPercent(current.capacityUse)})`,
+    `- ${copy.metrics.inflation}: ${formatPercent(current.inflation)} (${copy.metrics.priceIndex} ${current.priceIndex.toFixed(1)})`,
+    `- ${copy.metrics.unemployment}: ${formatPercent(current.unemployment)} (${copy.metrics.wageShare} ${formatPercent(current.wageShare * 100)})`,
+    `- ${copy.metrics.privateNfa}: ${formatMoney(current.privateNetFinancialAssets)} (${copy.metrics.fiscalDeficit} ${formatMoney(current.fiscalDeficit)})`,
+    '',
+    `## ${copy.panels.currentReading[0]}`,
+    ...lines.map((line) => `- ${line.label}: ${line.value}`),
+    '',
+    `## ${copy.reading.nextTitle}`,
+    ...nextItems.map((item) => `- ${item}`),
+    '',
+    shareUrl,
+  ].join('\n')
 }
 
 function buildReadingLines(copy: Copy, current: EconomyPoint): ReadingLine[] {

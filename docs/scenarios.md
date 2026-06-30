@@ -10,6 +10,8 @@ The app also includes **Guided Experiments** on the overview screen. Use them wh
 
 Use **Current Reading** after each scenario switch. It summarizes the current fiscal, real-resource, external-sector, and distribution signals, then suggests the next tab to inspect.
 
+Use **Copy brief** when you want to move the current interpretation outside the app. It copies a Markdown summary with headline metrics, current reading, next inspection points, and the exact share URL.
+
 ## 1. Sovereign Stabilizer
 
 **Theme:** fiscal support plus job guarantee buffer

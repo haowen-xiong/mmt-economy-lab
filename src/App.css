@@ -664,10 +664,34 @@
   padding-left: 14px;
 }
 
-.reading-next strong {
-  display: block;
+.reading-next-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 8px;
+}
+
+.reading-next-header strong {
   font-size: 13px;
+}
+
+.copy-brief-button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text);
+  cursor: pointer;
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.copy-brief-button:hover {
+  border-color: #0f766e;
+  color: #0f766e;
 }
 
 .reading-next ul {
