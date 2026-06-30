@@ -596,6 +596,62 @@
   min-width: 1240px;
 }
 
+.guided-list {
+  display: grid;
+  gap: 10px;
+}
+
+.guided-action {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  padding: 11px 12px;
+  text-align: left;
+}
+
+.guided-action:hover {
+  border-color: #0f766e;
+  background: #f0fdfa;
+}
+
+.guided-action span {
+  color: #0f766e;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.guided-action strong {
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.guided-action p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.guided-action em,
+.guided-action small {
+  color: #475569;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.guided-action small {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .tool-panel {
   min-width: 0;
   border: 1px solid var(--line);

@@ -24,6 +24,7 @@ import {
   YAxis,
 } from 'recharts'
 import {
+  ArrowRight,
   Banknote,
   Building2,
   CircleGauge,
@@ -67,6 +68,13 @@ import './App.css'
 type Icon = ComponentType<{ size?: number; strokeWidth?: number; className?: string }>
 type TooltipState = { text: string; x: number; y: number } | null
 type ShareStatus = 'idle' | 'copied' | 'ready'
+type GuidedExperimentId = 'fiscalSpace' | 'austerityGap' | 'resourceLimit' | 'automationDistribution'
+type GuidedExperiment = {
+  id: GuidedExperimentId
+  scenarioId: string
+  tab: TabId
+  cursor: number
+}
 type TooltipContextValue = {
   show: (text: string, x: number, y: number) => void
   hide: () => void
@@ -110,6 +118,12 @@ const TOOLTIP_MARGIN = 12
 const TOOLTIP_OFFSET = 14
 const CLIPBOARD_TIMEOUT_MS = 600
 const comparisonColors = ['#2563eb', '#0f766e', '#b45309', '#dc2626', '#7c3aed', '#475569', '#0891b2']
+const guidedExperiments: GuidedExperiment[] = [
+  { id: 'fiscalSpace', scenarioId: 'sovereign-stabilizer', tab: 'overview', cursor: 24 },
+  { id: 'austerityGap', scenarioId: 'austerity-gap', tab: 'balances', cursor: 36 },
+  { id: 'resourceLimit', scenarioId: 'resource-limit', tab: 'resources', cursor: 32 },
+  { id: 'automationDistribution', scenarioId: 'automation-platform', tab: 'society', cursor: 48 },
+]
 
 function copyTextWithTextArea(text: string) {
   const textArea = document.createElement('textarea')
@@ -238,6 +252,7 @@ const copy = {
       macroPath: ['宏观路径', 'GDP / 通胀 / 失业'],
       currentFlows: ['当期流量', '主要交易'],
       mmtIdentity: ['MMT 恒等式', '三部门余额'],
+      guidedExperiments: ['入门实验', '从问题开始'],
       sectorSeries: ['部门余额时间序列', '政府 + 私人 + 外国 = 0'],
       currentBalances: ['当期余额', '盈余为正'],
       balanceSheet: ['资产负债表快照', '存量'],
@@ -256,6 +271,7 @@ const copy = {
       macroPath: '把名义 GDP、通胀和失业放在同一张图里，观察财政、信用和资源约束的联动。',
       currentFlows: '展示当期几个核心资金流：政府支出、税收、银行信用、进口支付和出口收入。',
       mmtIdentity: '政府余额、私人部门余额、外国部门余额必须相加为零，这是部门余额分析的基本闭合条件。',
+      guidedExperiments: '直接打开几个高信号实验，快速观察财政、信用、资源和分配约束如何改变结果。',
       sectorSeries: '观察不同政策下，政府赤字如何映射到私人部门盈余和外国部门盈余。',
       currentBalances: '正值表示该部门当期获得净金融流入，负值表示净流出。',
       balanceSheet: '用简化资产负债表看存量：国债、存款、贷款、准备金和净金融资产如何对应。',
@@ -339,6 +355,15 @@ const copy = {
       depositLiabilitiesCapital: '存款负债 / 资本',
       claimsOnDomestic: '对本国债权',
       exportIncome: '本国出口收入',
+    },
+    guidedExperiments: {
+      start: '打开',
+      items: {
+        fiscalSpace: ['财政空间从哪里来？', '观察政府赤字如何表现为私人部门收入和净金融资产。', '财政 + 就业缓冲'],
+        austerityGap: ['紧缩会压到谁？', '切到部门余额，看低赤字和弱信用如何压缩私人部门需求。', '部门余额'],
+        resourceLimit: ['什么时候转向通胀？', '查看真实产出和产能，区分财政能力与真实资源约束。', '真实资源'],
+        automationDistribution: ['高产出是否会共享？', '进入社会结构层，观察自动化、资产价格和工资份额的分化。', '现代社会'],
+      },
     },
     comparison: {
       currentPolicy: '当前政策',
@@ -493,6 +518,7 @@ const copy = {
       macroPath: ['Macro Path', 'GDP / inflation / unemployment'],
       currentFlows: ['Current Flows', 'Main transactions'],
       mmtIdentity: ['MMT Identity', 'Three-sector balances'],
+      guidedExperiments: ['Guided Experiments', 'Start from a question'],
       sectorSeries: ['Sector Balance Series', 'Government + private + foreign = 0'],
       currentBalances: ['Current Balances', 'Surplus is positive'],
       balanceSheet: ['Balance Sheet Snapshot', 'Stocks'],
@@ -511,6 +537,7 @@ const copy = {
       macroPath: 'Places nominal GDP, inflation and unemployment together so you can see the fiscal-credit-resource interaction.',
       currentFlows: 'Shows the current core money flows: spending, taxes, bank credit, imports and exports.',
       mmtIdentity: 'Government, private-sector and foreign-sector balances must sum to zero. This is the accounting closure behind sectoral balances.',
+      guidedExperiments: 'Open high-signal experiments that quickly show how fiscal, credit, resource and distribution constraints change the result.',
       sectorSeries: 'Shows how government deficits map into private-sector and foreign-sector surpluses over time.',
       currentBalances: 'Positive values mean a sector receives a net financial inflow this period; negative values mean an outflow.',
       balanceSheet: 'A compact stock view of bonds, deposits, loans, reserves and net financial assets.',
@@ -594,6 +621,15 @@ const copy = {
       depositLiabilitiesCapital: 'Deposit liabilities / capital',
       claimsOnDomestic: 'Claims on domestic sector',
       exportIncome: 'Domestic export income',
+    },
+    guidedExperiments: {
+      start: 'Open',
+      items: {
+        fiscalSpace: ['Where does fiscal space come from?', 'Watch how government deficits appear as private-sector income and net financial assets.', 'Fiscal + job buffer'],
+        austerityGap: ['Who absorbs austerity?', 'Switch to sector balances and see how low deficits plus weak credit compress private demand.', 'Sector balances'],
+        resourceLimit: ['When does spending turn into inflation?', 'Compare real output and capacity to separate fiscal capacity from real-resource limits.', 'Real resources'],
+        automationDistribution: ['Does high output get shared?', 'Open the society layer and track automation, asset prices and wage-share pressure.', 'Modern society'],
+      },
     },
     comparison: {
       currentPolicy: 'Current policy',
@@ -730,6 +766,17 @@ function App() {
     setActiveScenario(scenario.id)
     setHorizon(INITIAL_HORIZON)
     setCursor(24)
+  }
+
+  const openGuidedExperiment = (experiment: GuidedExperiment) => {
+    const scenario = scenarios.find((item) => item.id === experiment.scenarioId)
+    if (!scenario) return
+    setPolicy(scenario.policy)
+    setActiveScenario(scenario.id)
+    setActiveTab(experiment.tab)
+    setHorizon(Math.max(INITIAL_HORIZON, experiment.cursor + HORIZON_EXTENSION_THRESHOLD))
+    setCursor(experiment.cursor)
+    setRunning(false)
   }
 
   const reset = () => {
@@ -1047,7 +1094,14 @@ function App() {
           />
         </section>
 
-        {activeTab === 'overview' && <Overview copy={ui} current={current} series={visibleSeries} />}
+        {activeTab === 'overview' && (
+          <Overview
+            copy={ui}
+            current={current}
+            series={visibleSeries}
+            onOpenExperiment={openGuidedExperiment}
+          />
+        )}
         {activeTab === 'balances' && <Balances copy={ui} current={current} series={visibleSeries} />}
         {activeTab === 'credit' && <Credit copy={ui} current={current} series={visibleSeries} />}
         {activeTab === 'resources' && <Resources copy={ui} current={current} series={visibleSeries} />}
@@ -1071,7 +1125,17 @@ function App() {
   )
 }
 
-function Overview({ copy, current, series }: { copy: Copy; current: EconomyPoint; series: EconomyPoint[] }) {
+function Overview({
+  copy,
+  current,
+  series,
+  onOpenExperiment,
+}: {
+  copy: Copy
+  current: EconomyPoint
+  series: EconomyPoint[]
+  onOpenExperiment: (experiment: GuidedExperiment) => void
+}) {
   return (
     <div className="view-grid">
       <section className="tool-panel wide">
@@ -1099,9 +1163,54 @@ function Overview({ copy, current, series }: { copy: Copy; current: EconomyPoint
       </section>
 
       <section className="tool-panel">
+        <PanelTitle
+          icon={CircleGauge}
+          title={copy.panels.guidedExperiments[0]}
+          meta={copy.panels.guidedExperiments[1]}
+          help={copy.panelHelp.guidedExperiments}
+        />
+        <GuidedExperimentList copy={copy} onOpenExperiment={onOpenExperiment} />
+      </section>
+
+      <section className="tool-panel full">
         <PanelTitle icon={Scale} title={copy.panels.mmtIdentity[0]} meta={copy.panels.mmtIdentity[1]} help={copy.panelHelp.mmtIdentity} />
         <IdentityStack copy={copy} current={current} />
       </section>
+    </div>
+  )
+}
+
+function GuidedExperimentList({
+  copy,
+  onOpenExperiment,
+}: {
+  copy: Copy
+  onOpenExperiment: (experiment: GuidedExperiment) => void
+}) {
+  return (
+    <div className="guided-list">
+      {guidedExperiments.map((experiment) => {
+        const experimentCopy = copy.guidedExperiments.items[experiment.id]
+        return (
+          <button
+            type="button"
+            className="guided-action"
+            key={experiment.id}
+            onClick={() => onOpenExperiment(experiment)}
+          >
+            <span>{experimentCopy[2]}</span>
+            <strong>{experimentCopy[0]}</strong>
+            <p>{experimentCopy[1]}</p>
+            <em>
+              {copy.tabs[experiment.tab]} · {copy.period} {experiment.cursor}
+            </em>
+            <small>
+              {copy.guidedExperiments.start}
+              <ArrowRight size={14} />
+            </small>
+          </button>
+        )
+      })}
     </div>
   )
 }

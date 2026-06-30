@@ -6,6 +6,8 @@ Use this guide as a learning path. Start with the baseline, then move one scenar
 
 After changing a scenario or moving policy knobs, use **Share** to copy a URL that preserves the current tab, period, language, scenario, and custom policy values. This makes it easier to compare interpretations with someone else using the same experiment state.
 
+The app also includes **Guided Experiments** on the overview screen. Use them when you want to jump directly from a learning question to the relevant scenario, tab, and time period.
+
 ## 1. Sovereign Stabilizer
 
 **Theme:** fiscal support plus job guarantee buffer
