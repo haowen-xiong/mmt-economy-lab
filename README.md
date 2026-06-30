@@ -6,7 +6,7 @@
 
 An interactive MMT and modern monetary economy sandbox for learning how fiscal policy, bank credit, real resources, external constraints, asset prices, inequality, and automation interact.
 
-[Report an issue](https://github.com/haowen-xiong/mmt-economy-lab/issues) · [Contribute](CONTRIBUTING.md) · [Deploy with GitHub Pages](#deploy)
+[Model notes](docs/model.md) · [Scenario guide](docs/scenarios.md) · [Report an issue](https://github.com/haowen-xiong/mmt-economy-lab/issues) · [Contribute](CONTRIBUTING.md)
 
 ![MMT Economy Lab screenshot](docs/screenshot.jpg)
 
@@ -30,6 +30,12 @@ The app defaults to English and includes a sidebar language switch for Chinese.
 - **Social actor map:** translate macro variables into household, firm, bank, state, foreign, and platform-sector exposure.
 - **Real-resource framing:** separate nominal spending capacity from actual capacity, inflation, employment, and supply constraints.
 - **Bilingual UI:** English by default, with Chinese available in one click.
+
+## Start Here
+
+- Read [Model Notes](docs/model.md) if you want to inspect the accounting identity, period loop, policy knobs, and known simplifications.
+- Read the [Scenario Guide](docs/scenarios.md) if you want a guided path through the built-in experiments.
+- Use the **Policy Compare** tab when you want to compare the current slider policy against the preset scenarios.
 
 ## Model Boundary
 
