@@ -652,6 +652,34 @@
   gap: 5px;
 }
 
+.reading-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.72fr);
+  gap: 14px;
+}
+
+.reading-next {
+  min-width: 0;
+  border-left: 1px solid var(--line);
+  padding-left: 14px;
+}
+
+.reading-next strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.reading-next ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .tool-panel {
   min-width: 0;
   border: 1px solid var(--line);
@@ -1046,5 +1074,16 @@
 
   .chart-frame {
     height: 340px;
+  }
+
+  .reading-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reading-next {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    padding-left: 0;
   }
 }

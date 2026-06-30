@@ -75,6 +75,12 @@ type GuidedExperiment = {
   tab: TabId
   cursor: number
 }
+type StatusTone = 'green' | 'amber' | 'red' | 'blue'
+type ReadingLine = {
+  label: string
+  value: string
+  tone: StatusTone
+}
 type TooltipContextValue = {
   show: (text: string, x: number, y: number) => void
   hide: () => void
@@ -253,6 +259,7 @@ const copy = {
       currentFlows: ['当期流量', '主要交易'],
       mmtIdentity: ['MMT 恒等式', '三部门余额'],
       guidedExperiments: ['入门实验', '从问题开始'],
+      currentReading: ['当前读数', '这组政策意味着什么'],
       sectorSeries: ['部门余额时间序列', '政府 + 私人 + 外国 = 0'],
       currentBalances: ['当期余额', '盈余为正'],
       balanceSheet: ['资产负债表快照', '存量'],
@@ -272,6 +279,7 @@ const copy = {
       currentFlows: '展示当期几个核心资金流：政府支出、税收、银行信用、进口支付和出口收入。',
       mmtIdentity: '政府余额、私人部门余额、外国部门余额必须相加为零，这是部门余额分析的基本闭合条件。',
       guidedExperiments: '直接打开几个高信号实验，快速观察财政、信用、资源和分配约束如何改变结果。',
+      currentReading: '把当前周期的财政、资源、外部和分配信号翻译成文字，帮助你决定下一步该看哪张图。',
       sectorSeries: '观察不同政策下，政府赤字如何映射到私人部门盈余和外国部门盈余。',
       currentBalances: '正值表示该部门当期获得净金融流入，负值表示净流出。',
       balanceSheet: '用简化资产负债表看存量：国债、存款、贷款、准备金和净金融资产如何对应。',
@@ -363,6 +371,29 @@ const copy = {
         austerityGap: ['紧缩会压到谁？', '切到部门余额，看低赤字和弱信用如何压缩私人部门需求。', '部门余额'],
         resourceLimit: ['什么时候转向通胀？', '查看真实产出和产能，区分财政能力与真实资源约束。', '真实资源'],
         automationDistribution: ['高产出是否会共享？', '进入社会结构层，观察自动化、资产价格和工资份额的分化。', '现代社会'],
+      },
+    },
+    reading: {
+      fiscal: '财政立场',
+      resource: '真实资源',
+      external: '外部部门',
+      distribution: '分配结构',
+      nextTitle: '下一步观察',
+      fiscalAdds: '赤字正在向非政府部门注入净金融资产。',
+      fiscalDrains: '财政余额正在回收私人部门购买力。',
+      resourceTight: '产能或价格压力已经接近约束区。',
+      resourceSlack: '失业缓冲仍大，主要问题更像需求不足。',
+      resourceRoom: '仍有可动员资源，财政空间更多取决于真实产能。',
+      externalLeak: '经常账户为逆差，部分需求泄漏到进口。',
+      externalSupport: '外部部门提供支撑或压力较低。',
+      distributionPressure: '资产、不平等或工资份额显示分配压力上升。',
+      distributionStable: '分配压力暂时温和。',
+      next: {
+        balances: '看部门余额：确认谁在获得净金融流入，谁在被迫承压。',
+        credit: '看银行信用：判断需求是财政驱动，还是私人信用驱动。',
+        resources: '看真实资源：区分产出扩张和价格压力。',
+        society: '看现代社会：检查增长是否变成工资份额和家庭部门改善。',
+        compare: '看政策对比：把当前政策同内置场景放在同一周期比较。',
       },
     },
     comparison: {
@@ -519,6 +550,7 @@ const copy = {
       currentFlows: ['Current Flows', 'Main transactions'],
       mmtIdentity: ['MMT Identity', 'Three-sector balances'],
       guidedExperiments: ['Guided Experiments', 'Start from a question'],
+      currentReading: ['Current Reading', 'What this policy means now'],
       sectorSeries: ['Sector Balance Series', 'Government + private + foreign = 0'],
       currentBalances: ['Current Balances', 'Surplus is positive'],
       balanceSheet: ['Balance Sheet Snapshot', 'Stocks'],
@@ -538,6 +570,7 @@ const copy = {
       currentFlows: 'Shows the current core money flows: spending, taxes, bank credit, imports and exports.',
       mmtIdentity: 'Government, private-sector and foreign-sector balances must sum to zero. This is the accounting closure behind sectoral balances.',
       guidedExperiments: 'Open high-signal experiments that quickly show how fiscal, credit, resource and distribution constraints change the result.',
+      currentReading: 'Translates current-period fiscal, resource, external and distribution signals into plain-language next steps.',
       sectorSeries: 'Shows how government deficits map into private-sector and foreign-sector surpluses over time.',
       currentBalances: 'Positive values mean a sector receives a net financial inflow this period; negative values mean an outflow.',
       balanceSheet: 'A compact stock view of bonds, deposits, loans, reserves and net financial assets.',
@@ -629,6 +662,29 @@ const copy = {
         austerityGap: ['Who absorbs austerity?', 'Switch to sector balances and see how low deficits plus weak credit compress private demand.', 'Sector balances'],
         resourceLimit: ['When does spending turn into inflation?', 'Compare real output and capacity to separate fiscal capacity from real-resource limits.', 'Real resources'],
         automationDistribution: ['Does high output get shared?', 'Open the society layer and track automation, asset prices and wage-share pressure.', 'Modern society'],
+      },
+    },
+    reading: {
+      fiscal: 'Fiscal stance',
+      resource: 'Real resources',
+      external: 'External sector',
+      distribution: 'Distribution',
+      nextTitle: 'Inspect next',
+      fiscalAdds: 'The deficit is adding net financial assets to the non-government sector.',
+      fiscalDrains: 'The fiscal balance is withdrawing private-sector purchasing power.',
+      resourceTight: 'Capacity or price pressure is near the binding constraint zone.',
+      resourceSlack: 'The unemployment buffer is still large, so the main problem looks like weak demand.',
+      resourceRoom: 'Real resources are still available; fiscal space depends more on actual capacity.',
+      externalLeak: 'The current account is negative, so part of demand is leaking into imports.',
+      externalSupport: 'The external sector is supportive or not yet a major pressure point.',
+      distributionPressure: 'Assets, inequality or wage share show rising distribution pressure.',
+      distributionStable: 'Distribution pressure is still moderate.',
+      next: {
+        balances: 'Open Sector Balances to see who receives net financial inflow and who is squeezed.',
+        credit: 'Open Bank Credit to tell whether demand is fiscal-led or private-credit-led.',
+        resources: 'Open Real Resources to separate output expansion from price pressure.',
+        society: 'Open Modern Society to check whether growth improves wage share and household conditions.',
+        compare: 'Open Policy Compare to place this policy beside the built-in scenarios at the same period.',
       },
     },
     comparison: {
@@ -1173,6 +1229,16 @@ function Overview({
       </section>
 
       <section className="tool-panel full">
+        <PanelTitle
+          icon={HelpCircle}
+          title={copy.panels.currentReading[0]}
+          meta={copy.panels.currentReading[1]}
+          help={copy.panelHelp.currentReading}
+        />
+        <CurrentReading copy={copy} current={current} />
+      </section>
+
+      <section className="tool-panel full">
         <PanelTitle icon={Scale} title={copy.panels.mmtIdentity[0]} meta={copy.panels.mmtIdentity[1]} help={copy.panelHelp.mmtIdentity} />
         <IdentityStack copy={copy} current={current} />
       </section>
@@ -1213,6 +1279,78 @@ function GuidedExperimentList({
       })}
     </div>
   )
+}
+
+function CurrentReading({ copy, current }: { copy: Copy; current: EconomyPoint }) {
+  const lines = buildReadingLines(copy, current)
+  const nextItems = buildNextObservations(copy, current)
+
+  return (
+    <div className="reading-grid">
+      <div className="constraint-list">
+        {lines.map((line) => (
+          <StatusLine key={line.label} label={line.label} value={line.value} tone={line.tone} />
+        ))}
+      </div>
+      <div className="reading-next">
+        <strong>{copy.reading.nextTitle}</strong>
+        <ul>
+          {nextItems.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+function buildReadingLines(copy: Copy, current: EconomyPoint): ReadingLine[] {
+  const fiscalLine: ReadingLine =
+    current.fiscalDeficit >= 0
+      ? { label: copy.reading.fiscal, value: copy.reading.fiscalAdds, tone: 'blue' }
+      : { label: copy.reading.fiscal, value: copy.reading.fiscalDrains, tone: 'red' }
+
+  const resourceLine: ReadingLine =
+    current.capacityUse > 96 || current.inflation > 6
+      ? { label: copy.reading.resource, value: copy.reading.resourceTight, tone: 'red' }
+      : current.unemployment > 8
+        ? { label: copy.reading.resource, value: copy.reading.resourceSlack, tone: 'amber' }
+        : { label: copy.reading.resource, value: copy.reading.resourceRoom, tone: 'green' }
+
+  const externalLine: ReadingLine =
+    current.currentAccount < 0
+      ? { label: copy.reading.external, value: copy.reading.externalLeak, tone: 'amber' }
+      : { label: copy.reading.external, value: copy.reading.externalSupport, tone: 'green' }
+
+  const distributionLine: ReadingLine =
+    current.inequality >= 0.48 || current.wageShare < 0.55
+      ? { label: copy.reading.distribution, value: copy.reading.distributionPressure, tone: 'red' }
+      : { label: copy.reading.distribution, value: copy.reading.distributionStable, tone: 'green' }
+
+  return [fiscalLine, resourceLine, externalLine, distributionLine]
+}
+
+function buildNextObservations(copy: Copy, current: EconomyPoint) {
+  const observations: string[] = []
+  const addObservation = (item: string) => {
+    if (!observations.includes(item)) observations.push(item)
+  }
+
+  if (current.capacityUse > 96 || current.inflation > 6 || current.unemployment > 8) {
+    addObservation(copy.reading.next.resources)
+  }
+  if (current.fiscalDeficit < 0 || current.privateBalance < 0 || current.unemployment > 8) {
+    addObservation(copy.reading.next.balances)
+  }
+  if (Math.abs(current.creditCreation) > 20 || current.assetIndex > 140) {
+    addObservation(copy.reading.next.credit)
+  }
+  if (current.inequality >= 0.48 || current.wageShare < 0.55 || current.assetIndex > 145) {
+    addObservation(copy.reading.next.society)
+  }
+  addObservation(copy.reading.next.compare)
+
+  return observations.slice(0, 3)
 }
 
 function Balances({ copy, current, series }: { copy: Copy; current: EconomyPoint; series: EconomyPoint[] }) {

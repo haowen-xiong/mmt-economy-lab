@@ -26,6 +26,7 @@ The app defaults to English and includes a sidebar language switch for Chinese.
 
 - **Sectoral balances:** government, private, and foreign balances always close to the accounting identity.
 - **Guided experiments:** start from concrete questions instead of reading the whole model first.
+- **Current reading:** translate the current period into fiscal, resource, external, and distribution signals.
 - **Policy knobs:** tune spending, taxes, job guarantee support, rates, credit impulse, productivity, imports, energy costs, automation, exports, and transfers.
 - **Policy comparison:** compare scenarios against the current slider policy with growth, stress, and scorecard views.
 - **Shareable experiments:** copy a link that preserves the current language, tab, period, scenario, and custom policy settings.
@@ -38,6 +39,7 @@ The app defaults to English and includes a sidebar language switch for Chinese.
 - Read [Model Notes](docs/model.md) if you want to inspect the accounting identity, period loop, policy knobs, and known simplifications.
 - Read the [Scenario Guide](docs/scenarios.md) if you want a guided path through the built-in experiments.
 - Start with **Guided Experiments** on the overview screen if you want a fast path into the main mechanisms.
+- Use **Current Reading** to decide which chart or tab is most relevant after a scenario changes.
 - Use the **Policy Compare** tab when you want to compare the current slider policy against the preset scenarios.
 - Use the **Share** button after changing policy knobs when you want to send someone the exact experiment state.
 

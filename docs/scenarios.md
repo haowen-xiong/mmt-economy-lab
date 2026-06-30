@@ -8,6 +8,8 @@ After changing a scenario or moving policy knobs, use **Share** to copy a URL th
 
 The app also includes **Guided Experiments** on the overview screen. Use them when you want to jump directly from a learning question to the relevant scenario, tab, and time period.
 
+Use **Current Reading** after each scenario switch. It summarizes the current fiscal, real-resource, external-sector, and distribution signals, then suggests the next tab to inspect.
+
 ## 1. Sovereign Stabilizer
 
 **Theme:** fiscal support plus job guarantee buffer
