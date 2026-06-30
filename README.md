@@ -1,13 +1,12 @@
 # MMT Economy Lab
 
 ![CI](https://github.com/haowen-xiong/mmt-economy-lab/actions/workflows/ci.yml/badge.svg)
-![Pages](https://github.com/haowen-xiong/mmt-economy-lab/actions/workflows/pages.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-0f766e.svg)
 ![React](https://img.shields.io/badge/React-19-2563eb.svg)
 
 An interactive MMT and modern monetary economy sandbox for learning how fiscal policy, bank credit, real resources, external constraints, asset prices, inequality, and automation interact.
 
-[Live demo](https://haowen-xiong.github.io/mmt-economy-lab/) · [Report an issue](https://github.com/haowen-xiong/mmt-economy-lab/issues) · [Contribute](CONTRIBUTING.md)
+[Report an issue](https://github.com/haowen-xiong/mmt-economy-lab/issues) · [Contribute](CONTRIBUTING.md) · [Deploy with GitHub Pages](#deploy)
 
 ![MMT Economy Lab screenshot](docs/screenshot.jpg)
 
@@ -58,6 +57,17 @@ npm run check
 ```
 
 This runs linting, model tests, and a production build.
+
+## Deploy
+
+The repository includes a GitHub Pages deployment workflow. To publish the live demo:
+
+1. Open repository settings on GitHub.
+2. Go to **Pages**.
+3. Set the source to **GitHub Actions**.
+4. Run the **Deploy GitHub Pages** workflow.
+
+The Vite build automatically uses `/mmt-economy-lab/` as the asset base when `GITHUB_PAGES=true`.
 
 ## Project Structure
 
