@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest a learning, model, or UI improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Learning problem
+      description: What should the app help people understand better?
+      placeholder: It is hard to see when fiscal expansion turns into inflation pressure...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What change would make that clearer?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Model mechanics
+        - Scenario design
+        - UI and charts
+        - Documentation
+        - Tests
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes
+      description: References, screenshots, or examples.

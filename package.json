@@ -1,14 +1,24 @@
 {
   "name": "mmt-economy-lab",
   "private": true,
+  "description": "Interactive MMT and modern monetary economy learning sandbox.",
   "version": "0.0.0",
   "license": "MIT",
+  "homepage": "https://haowen-xiong.github.io/mmt-economy-lab/",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/haowen-xiong/mmt-economy-lab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/haowen-xiong/mmt-economy-lab/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
+    "check": "npm run lint && npm run test && npm run build",
     "preview": "vite preview"
   },
   "dependencies": {
